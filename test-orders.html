@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LocalStorage Test</title>
+</head>
+<body>
+    <h1>LocalStorage Test</h1>
+    <button onclick="clearStorage()">LocalStorage Temizle</button>
+    <button onclick="checkStorage()">LocalStorage Kontrol Et</button>
+    <div id="result"></div>
+
+    <script>
+        function clearStorage() {
+            localStorage.clear();
+            document.getElementById('result').innerHTML = '<p style="color: green;">LocalStorage temizlendi!</p>';
+        }
+
+        function checkStorage() {
+            const orders = localStorage.getItem('allOrders');
+            const result = document.getElementById('result');
+            
+            if (orders) {
+                try {
+                    const parsedOrders = JSON.parse(orders);
+                    result.innerHTML = `
+                        <h3>LocalStorage İçeriği:</h3>
+                        <p>Sipariş sayısı: ${parsedOrders.length}</p>
+                        <pre>${JSON.stringify(parsedOrders, null, 2)}</pre>
+                    `;
+                } catch (e) {
+                    result.innerHTML = '<p style="color: red;">Geçersiz JSON formatı!</p>';
+                }
+            } else {
+                result.innerHTML = '<p style="color: orange;">LocalStorage boş</p>';
+            }
+        }
+
+        // Sayfa yüklendiğinde kontrol et
+        window.onload = function() {
+            checkStorage();
+        };
+    </script>
+</body>
+</html> 

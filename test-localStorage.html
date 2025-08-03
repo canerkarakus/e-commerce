@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocalStorage Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .info { color: #17a2b8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 LocalStorage Sipariş Test</h1>
+        
+        <div>
+            <button onclick="checkOrders()">📋 Siparişleri Kontrol Et</button>
+            <button onclick="clearOrders()">🗑️ Siparişleri Temizle</button>
+            <button onclick="addTestOrder()">➕ Test Siparişi Ekle</button>
+            <button onclick="showAllStorage()">📦 Tüm LocalStorage</button>
+        </div>
+
+        <div id="output" class="output">Test sonuçları burada görünecek...</div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const timestamp = new Date().toLocaleTimeString('tr-TR');
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+            output.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function checkOrders() {
+            log('🔍 Siparişler kontrol ediliyor...', 'info');
+            
+            try {
+                const ordersData = localStorage.getItem('allOrders');
+                
+                if (!ordersData) {
+                    log('❌ localStorage\'da "allOrders" anahtarı bulunamadı', 'error');
+                    return;
+                }
+
+                if (ordersData === 'undefined' || ordersData === 'null') {
+                    log('⚠️ localStorage\'da geçersiz veri: ' + ordersData, 'error');
+                    return;
+                }
+
+                const orders = JSON.parse(ordersData);
+                
+                if (!Array.isArray(orders)) {
+                    log('❌ Sipariş verisi array formatında değil: ' + typeof orders, 'error');
+                    return;
+                }
+
+                log(`✅ ${orders.length} sipariş bulundu`, 'success');
+                
+                orders.forEach((order, index) => {
+                    log(`📦 Sipariş ${index + 1}:`, 'info');
+                    log(`   ID: ${order.id}`, 'info');
+                    log(`   Email: ${order.userEmail}`, 'info');
+                    log(`   Tutar: ${order.totalAmount}₺`, 'info');
+                    log(`   Durum: ${order.status}`, 'info');
+                    log(`   Tarih: ${new Date(order.createdAt).toLocaleString('tr-TR')}`, 'info');
+                    log(`   Ürün sayısı: ${order.items?.length || 0}`, 'info');
+                    log('', 'info');
+                });
+
+            } catch (error) {
+                log('❌ Sipariş kontrol hatası: ' + error.message, 'error');
+            }
+        }
+
+        function clearOrders() {
+            if (confirm('Tüm siparişleri silmek istediğinizden emin misiniz?')) {
+                localStorage.removeItem('allOrders');
+                log('🗑️ Tüm siparişler temizlendi', 'success');
+            }
+        }
+
+        function addTestOrder() {
+            const testOrder = {
+                id: Date.now().toString(),
+                userId: "test-user-id",
+                userEmail: "info@canerkarakus.com.tr",
+                userName: "Test Kullanıcı",
+                items: [
+                    {
+                        id: 1,
+                        name: "Test Ürün",
+                        price: 99.99,
+                        image: "/test-image.jpg",
+                        quantity: 1
+                    }
+                ],
+                totalAmount: 99.99,
+                status: "pending",
+                address: {
+                    title: "Test Adres",
+                    firstName: "Test",
+                    lastName: "Kullanıcı",
+                    phone: "5551234567",
+                    cityName: "İstanbul",
+                    districtName: "Kadıköy",
+                    neighborhood: "Test Mahalle",
+                    street: "Test Sokak",
+                    buildingNo: "1"
+                },
+                paymentMethod: "credit-card",
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                isNew: true
+            };
+
+            try {
+                const existingOrders = JSON.parse(localStorage.getItem('allOrders') || '[]');
+                const updatedOrders = [testOrder, ...existingOrders];
+                localStorage.setItem('allOrders', JSON.stringify(updatedOrders));
+                log('✅ Test siparişi eklendi: ' + testOrder.id, 'success');
+            } catch (error) {
+                log('❌ Test siparişi ekleme hatası: ' + error.message, 'error');
+            }
+        }
+
+        function showAllStorage() {
+            log('📦 Tüm localStorage içeriği:', 'info');
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                log(`${key}: ${value?.substring(0, 100)}${value?.length > 100 ? '...' : ''}`, 'info');
+            }
+            
+            log(`Toplam ${localStorage.length} anahtar bulundu`, 'info');
+        }
+
+        // Sayfa yüklendiğinde otomatik kontrol
+        window.onload = function() {
+            log('🚀 LocalStorage test sayfası yüklendi', 'success');
+            checkOrders();
+        };
+    </script>
+</body>
+</html> 

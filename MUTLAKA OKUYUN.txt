@@ -1,0 +1,17 @@
+.env.local dosyası oluşturarak içerisine sağlayıcınızın vermiş olduğu SMTP bilgilerini girerseniz. E-mail entegrasyonu sorunsuz çalışacaktır.
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+UYARI
+
+---------------------------------------------
+.env.local dosyanızı kesinlikle paylaşmayın.
+Bu dosya size ait ve kimsenin bilmemesi gereken
+bilgiler içermektedir. Özellikle Yapay Zeka (AI) ile paylaşmayın.
+-----------------------------------------------------------------
+Ayrıca klasör içerisinde bulunan wordpress oluşturucuyu çalıştırarak otomatik olarak zip haline getirebilir ve wordpress'te kullanabilirsiniz.
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+İLETİŞİM
+------------------------
+info@canerkarakus.com.tr
+Discord: caaner
